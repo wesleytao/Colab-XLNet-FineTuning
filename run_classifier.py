@@ -27,6 +27,75 @@ import function_builder
 from classifier_utils import PaddingInputExample
 from classifier_utils import convert_single_example
 from prepro_utils import preprocess_text, encode_ids
+import pandas as pd
+
+EMAIL_LABEL = [ 'AlterationsUpdates_BenefitsAlt',
+ 'AlterationsUpdates_Death1stLife',
+ 'AlterationsUpdates_StopReissue',
+ 'BENEFITS-BENCLM-CLAIM FORM',
+ 'BENEFITS-TSSQRY-General',
+ 'BQIP_AttendanceatmedicalForm',
+ 'BQIP_IMEGPREQUEST',
+ 'BQIP_MedicalBill',
+ 'BQIP_PHOTOID',
+ 'BenefitPaymentsClaim_DeathinRetirementPension',
+ 'CRCLM_na',
+ 'DC-AUTOQTE-n/a',
+ 'DC-CADD-Breakdown',
+ 'DC-CADD-VARIABLEDD',
+ 'DC-FUSW-Single',
+ 'DC-MEMUPAUTO-n/a',
+ 'DC-NESAUTO-DC',
+ 'DC-NESAUTO-PRSA',
+ 'DC-PPQRY-Access Query',
+ 'DC-QRY-CORRESPCOPY',
+ 'DC-QRY-Documentation',
+ 'DC-QRY-FUNDVALUE',
+ 'DC-QRY-GENERAL',
+ 'DC-QRY-LETTEROFAUTH',
+ 'DC-QRY-Member Documentation',
+ 'DC-QRY-Outstanding Requirements',
+ 'DC-QRY-PASSWORD',
+ 'DC-QRY-SCHEMETERMS',
+ 'DC-QRY-Scheme Audit',
+ 'DC-QRY-Scheme Change',
+ 'DC-QRY-TRANSACTIONQRY',
+ 'DC-QRY-TRANSFEROFBENEFITS',
+ 'DC-QRY-TRUSTEEREPORT',
+ 'DC-SCUP-Annual Report Questionnaire',
+ 'DC-SCUP-Salaries',
+ 'IPCLAIM_NA',
+ 'MCIP_General',
+ 'MCIP_Rehabupdate',
+ 'PRECLM_na',
+ 'QueryPensionPayments_General',
+ 'QueryPensionPayments_TSSGeneral',
+ 'RC_BankStatements ',
+ 'RC_BenefitAdjustment',
+ 'RC_Email',
+ 'RC_Financial',
+ 'RC_ReturntoWorkUpdate',
+ 'RC_Salary',
+ 'RC_SickLeave',
+ 'RC_Updaterequest',
+ 'RISK-ADMIN-ACA-Refund_Cheque',
+ 'RISK-ADMIN-CVR-NORMALCOMMISSION',
+ 'RISK-ADMIN-DPCC-General_Correspondence',
+ 'RISK-ADMIN-INVET-RENEWALDATA',
+ 'RISK-ADMIN-INVET-na',
+ 'RISK-ADMIN-RBKR-Quote',
+ 'RISK-ADMIN-RBKR-RATE_REDUCTION',
+ 'RISK-ADMIN-RSQRY-Commission',
+ 'RISK-ADMIN-RSQRY-Direct_Debit_Query',
+ 'RISK-ADMIN-RSQRY-External_query',
+ 'RISK-ADMIN-RSQRY-Installation_and_Documentation',
+ 'RISK-ADMIN-RSQRY-Payment_Verification_or_Adjustment',
+ 'RISK-ADMIN-RSQRY-Rate_Reviews_Query',
+ 'RISK-ADMIN-RSQRY-Renewal_Query',
+ 'RISK-ADMIN-RSQRY-Statement_of_Account_Request',
+ 'RISK-ADMIN-UWQRY-Continuation_Option',
+ 'RISK-ADMIN-UWQRY-General']
+
 
 
 # Model
@@ -192,6 +261,31 @@ class DataProcessor(object):
         if len(line) == 0: continue
         lines.append(line)
       return lines
+
+
+class EmailProcessor(DataProcessor):
+    def __init__(self):
+        self.email_labels = EMAIL_LABEL
+
+    def get_train_examples(self, data_dir):
+        return self._create_examples(os.path.join(data_dir, "train.csv"))
+
+    def get_dev_examples(self, data_dir):
+        return self._create_examples(os.path.join(data_dir, "test.csv"))
+
+    def get_labels(self):
+        """See base class."""
+        return self.email_labels
+
+    def _create_examples(self, input_file):
+        """Creates examples for the training and dev sets."""
+        examples = []
+        table = pd.read_csv(input_file)
+        for i, row in enumerate(table.to_dict("rows")):
+            examples.append(
+                InputExample(guid=str(i), text_a=row['phrase'], text_b=None, label=row['topic'])
+            )
+        return examples
 
 
 class GLUEProcessor(DataProcessor):
@@ -651,7 +745,8 @@ def main(_):
       "mnli_mismatched": MnliMismatchedProcessor,
       'sts-b': StsbProcessor,
       'imdb': ImdbProcessor,
-       "yelp5": Yelp5Processor
+       "yelp5": Yelp5Processor,
+      'email': EmailProcessor,
   }
 
   if not FLAGS.do_train and not FLAGS.do_eval and not FLAGS.do_predict:
