@@ -287,6 +287,9 @@ class EmailProcessor(DataProcessor):
     def get_dev_examples(self, data_dir):
         return self._create_examples(os.path.join(data_dir, "test.csv"))
 
+    def get_test_examples(self, data_dir):
+        return self._create_examples(os.path.join(data_dir, "test.csv"))
+
     def get_labels(self):
         """See base class."""
         return self.email_labels
