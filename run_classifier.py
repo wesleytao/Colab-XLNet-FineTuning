@@ -29,7 +29,21 @@ from classifier_utils import convert_single_example
 from prepro_utils import preprocess_text, encode_ids
 import pandas as pd
 
-EMAIL_LABEL = [ 'AlterationsUpdates_BenefitsAlt',
+EMAIL_LABEL = [
+  'BENEFITS-TSSQRY-Transfer',
+ 'COREBANKING-QRY-Internal',
+ 'DC-AUTOQTE-n_a',
+ 'DC-CADD-CORRESPONDENCE',
+ 'DC-CADD-EFT Breakdown',
+ 'DC-CPLT-na',
+ 'DC-MANQTE-na',
+ 'DC-PPQRY-Access_Query',
+ 'DC-QRY-ISSUEUNITRATE',
+ 'DC-QRY-Internal',
+ 'DC-QRY-MEMBERDOCUMENTATION',
+ 'DC-QRY-Outstanding_Requirements',
+ 'DC-QRYNS-Non Standard',
+ 'AlterationsUpdates_BenefitsAlt',
  'AlterationsUpdates_Death1stLife',
  'AlterationsUpdates_StopReissue',
  'BENEFITS-BENCLM-CLAIM FORM',
